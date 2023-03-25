@@ -1,6 +1,7 @@
 package com.maylcf.firebasemvvm
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,6 +10,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import com.google.firebase.firestore.FirebaseFirestore
 import com.maylcf.firebasemvvm.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+
+        addSampleUserToFirebaseDatabase()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -54,5 +58,21 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    private fun addSampleUserToFirebaseDatabase() {
+        val user: MutableMap<String, Any> = HashMap()
+        user["first"] = "John"
+        user["last"] = "Smith"
+        user["born"] = "1980"
+
+        FirebaseFirestore.getInstance().collection("users")
+            .add(user)
+            .addOnSuccessListener { docReference ->
+                Log.d("TAG", "DocumentSnapshot added with id: " + docReference.id)
+            }
+            .addOnFailureListener {
+                Log.w("TAG", "Error adding document: " + it.message)
+            }
     }
 }
